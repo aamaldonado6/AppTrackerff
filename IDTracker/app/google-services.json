@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "600697946565",
+    "firebase_url": "https://appidtracjer01.firebaseio.com",
+    "project_id": "appidtracjer01",
+    "storage_bucket": "appidtracjer01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:600697946565:android:ab71cea489103c2f",
+        "android_client_info": {
+          "package_name": "alv.app.utpl.edu.ec.apptracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "600697946565-rpavrlhbcspue7h5klhb91q571lgog8a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "alv.app.utpl.edu.ec.apptracker",
+            "certificate_hash": "d543544cedc6b6b7b9b3b00154d23f53b7d5ddbb"
+          }
+        },
+        {
+          "client_id": "600697946565-lh5vsue24bu7ila355s718imv3ubqeal.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNQclDxITpnomFs0c_R-PeGzPwb2WxE4I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "600697946565-lh5vsue24bu7ila355s718imv3ubqeal.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
