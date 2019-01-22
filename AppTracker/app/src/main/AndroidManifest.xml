@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature android:name="android.hardware.location.gps" />
 
@@ -22,7 +22,8 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,7 +45,10 @@
 
         <activity android:name=".menus.Excesos" />
         <activity android:name=".menus.ReportarCond" />
-        <activity android:name=".menus.CodigoQR"></activity>
+        <activity android:name=".menus.CodigoQR" />
+        <activity
+            android:name=".menus.MapsActivity1"
+            android:label="@string/title_activity_maps1"></activity>
     </application>
 
 </manifest>

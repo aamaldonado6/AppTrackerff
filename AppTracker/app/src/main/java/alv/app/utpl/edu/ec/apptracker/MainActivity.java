@@ -27,6 +27,7 @@ import java.util.Locale;
 
 import alv.app.utpl.edu.ec.apptracker.menus.CodigoQR;
 import alv.app.utpl.edu.ec.apptracker.menus.Excesos;
+import alv.app.utpl.edu.ec.apptracker.menus.MapsActivity1;
 import alv.app.utpl.edu.ec.apptracker.menus.ReportarCond;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -97,9 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         GpsUbicacion  gpsu = new GpsUbicacion();
         gpsu.setMainActivity(this);
         int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
-
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 3,(GpsUbicacion) gpsu);
-
 
     }
 
@@ -141,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.codigoQr: i = new Intent(this,CodigoQR.class);startActivity(i); break;
             case R.id.cardLista : i = new Intent(this,Excesos.class);startActivity(i); break;
             case R.id.cardReportar : i = new Intent(this,ReportarCond.class);startActivity(i); break;
+            case R.id.cardMapa : i = new Intent(this,MapsActivity1.class);startActivity(i); break;
         }
     }
 }
