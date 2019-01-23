@@ -27,7 +27,7 @@ import java.util.Locale;
 
 import alv.app.utpl.edu.ec.apptracker.menus.CodigoQR;
 import alv.app.utpl.edu.ec.apptracker.menus.Excesos;
-import alv.app.utpl.edu.ec.apptracker.menus.MapsActivity1;
+import alv.app.utpl.edu.ec.apptracker.menus.MapsActivity01;
 import alv.app.utpl.edu.ec.apptracker.menus.ReportarCond;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.codigoQr: i = new Intent(this,CodigoQR.class);startActivity(i); break;
             case R.id.cardLista : i = new Intent(this,Excesos.class);startActivity(i); break;
             case R.id.cardReportar : i = new Intent(this,ReportarCond.class);startActivity(i); break;
-            case R.id.cardMapa : i = new Intent(this,MapsActivity1.class);startActivity(i); break;
+            case R.id.cardMapa : i = new Intent(this,MapsActivity01.class);startActivity(i); break;
         }
     }
 }

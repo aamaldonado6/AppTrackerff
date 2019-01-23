@@ -43,7 +43,6 @@ public class GpsUbicacion implements LocationListener {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
-
         //obtener id del dispositivo
         String myIMEI = Settings.Secure.getString(mainActivity.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         //obtener la velocidad en km/h ,altitud y longitud

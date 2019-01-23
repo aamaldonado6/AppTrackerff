@@ -47,8 +47,8 @@
         <activity android:name=".menus.ReportarCond" />
         <activity android:name=".menus.CodigoQR" />
         <activity
-            android:name=".menus.MapsActivity1"
-            android:label="@string/title_activity_maps1"></activity>
+            android:name=".menus.MapsActivity01"
+            android:label="@string/title_activity_maps01"></activity>
     </application>
 
 </manifest>
