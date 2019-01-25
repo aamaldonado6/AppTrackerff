@@ -51,13 +51,12 @@ public class Excesos extends AppCompatActivity {
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                     try {
                         Reporte rCoord = snapshot.getValue(Reporte.class);
-                        double rLat = rCoord.getLatitud();
-                        double rLong = rCoord.getLongitud();
+                        String rVel = rCoord.getVelocidad();
                         int rEx = rCoord.getReportar();
                         contador = contador+1;
                         Switch switchb = new Switch(getApplicationContext());
                         //Personalizando botones
-                        switchb.setText("Exceso de velocidad Nro: "+contador+"\n\nLat: "+rLat+"\nLong: "+rLong);
+                        switchb.setText("Exceso de velocidad Nro: "+contador+"\n\nVelocidad: "+rVel+" Km/h");
                         switchb.setTextColor(Color.rgb(255, 255, 255));
                         switchb.setBackgroundColor(Color.rgb(64,89,120));
                         if (rEx==1 ){
@@ -108,25 +107,21 @@ public class Excesos extends AppCompatActivity {
 
 
     public static class Reporte {
-        private double latitud;
-        private double longitud;
         private int reportar;
-
+        private String velocidad;
         public Reporte() {
             // ...
+        }
+
+        public String getVelocidad() {
+            return velocidad;
         }
 
         public int getReportar() {
             return reportar;
         }
 
-        public double getLatitud() {
-            return latitud;
-        }
 
-        public double getLongitud() {
-            return longitud;
-        }
     }
 
 

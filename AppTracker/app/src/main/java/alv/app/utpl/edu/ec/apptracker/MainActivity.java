@@ -16,13 +16,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import alv.app.utpl.edu.ec.apptracker.menus.CodigoQR;
 import alv.app.utpl.edu.ec.apptracker.menus.Excesos;
@@ -34,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public CardView reportar, mapa, codigoQr, listaV;
     LottieAnimationView animationView;
     boolean estaPresionado = false;
+    private DatabaseReference mDatabase;
+
 
 
     @Override
@@ -57,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //inicializar Firebase
         try {
             FirebaseApp.initializeApp(this);
+            mDatabase = FirebaseDatabase.getInstance().getReference();
+
         }
         catch (Exception e) {
         }
@@ -139,6 +148,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // result of the request.
             }
         }
+    }
+    public void panico(View v){
+
+            
     }
 
     @Override
