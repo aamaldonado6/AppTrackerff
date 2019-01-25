@@ -78,7 +78,7 @@ public class GpsUbicacion implements LocationListener {
         datos.put("hora",hora);
         datos.put("fecha",fecha);
         datos.put("idDisposi",myIMEI);
-        datos.put("reportar",0);
+        datos.put("reportado",0);
         mDatabase.child(myIMEI).child("excesoVelocidad").push().setValue(datos);
 
 

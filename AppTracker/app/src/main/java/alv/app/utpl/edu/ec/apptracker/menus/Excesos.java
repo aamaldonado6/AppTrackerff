@@ -42,7 +42,7 @@ public class Excesos extends AppCompatActivity {
 
     }
     public void listaFirebase(final LinearLayout contenedor) {
-        
+
         String myIMEI = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         ref.child(myIMEI).child("excesoVelocidad").addValueEventListener(new ValueEventListener() {
             @Override
@@ -50,12 +50,19 @@ public class Excesos extends AppCompatActivity {
                 int contador =0;
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                     try {
+                        Reporte rCoord = snapshot.getValue(Reporte.class);
+                        double rLat = rCoord.getLatitud();
+                        double rLong = rCoord.getLongitud();
+                        int rEx = rCoord.getReportar();
                         contador = contador+1;
                         Switch switchb = new Switch(getApplicationContext());
                         //Personalizando botones
-                        switchb.setText("Exceso de velocidad Nro: "+contador);
+                        switchb.setText("Exceso de velocidad Nro: "+contador+"\n\nLat: "+rLat+"\nLong: "+rLong);
                         switchb.setTextColor(Color.rgb(255, 255, 255));
                         switchb.setBackgroundColor(Color.rgb(64,89,120));
+                        if (rEx==1 ){
+                            switchb.setChecked(true);
+                        }
 
                         //Enviar un margin a los botones
                         LinearLayout.LayoutParams parametros = new LinearLayout.LayoutParams(
@@ -90,24 +97,35 @@ public class Excesos extends AppCompatActivity {
         public void onClick(View v) {
             //aca castemos la variable v (View) para que este se convierta en un boton
             Button objBoton = (Button) v;
-            Toast.makeText(getApplicationContext(),"Se reportó el exceso de velocidad Nro "+objBoton.getText(),Toast.LENGTH_SHORT).show();
+            if (objBoton.isEnabled()){
+
+                Toast.makeText(getApplicationContext(),
+                        "Se reportó el exceso de velocidad Nro "+objBoton.getText(),Toast.LENGTH_SHORT).show();
+
+            }
         }
     };
 
 
     public static class Reporte {
-
-        public double reportar;
+        private double latitud;
+        private double longitud;
+        private int reportar;
 
         public Reporte() {
             // ...
         }
-        public Reporte(double reportar) {
-            // ...
+
+        public int getReportar() {
+            return reportar;
         }
 
-        public double getReportar() {
-            return reportar;
+        public double getLatitud() {
+            return latitud;
+        }
+
+        public double getLongitud() {
+            return longitud;
         }
     }
 

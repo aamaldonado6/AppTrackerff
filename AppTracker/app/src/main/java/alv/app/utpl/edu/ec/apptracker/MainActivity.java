@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         GpsUbicacion  gpsu = new GpsUbicacion();
         gpsu.setMainActivity(this);
         int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 8,(GpsUbicacion) gpsu);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 3,(GpsUbicacion) gpsu);
 
     }
 
