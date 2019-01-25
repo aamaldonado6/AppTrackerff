@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AlertDialog;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -20,7 +19,7 @@ public class GpsUbicacion implements LocationListener {
     MainActivity mainActivity;
     private DatabaseReference mDatabase;
     Calendar calendario = new GregorianCalendar();
-    int hora,minuto,segundo;
+    int hora,minuto,segundo,mes,dia,anio;
 
     public MainActivity getMainActivity(){
         return mainActivity;
@@ -35,35 +34,40 @@ public class GpsUbicacion implements LocationListener {
         hora = calendario.get(Calendar.HOUR_OF_DAY);
         minuto = calendario.get(Calendar.MINUTE);
         segundo = calendario.get(Calendar.SECOND);
+        dia = calendario.get(Calendar.DAY_OF_MONTH);
+        mes = calendario.get(Calendar.MONTH);
+        mes = mes+1;
+        anio = calendario.get(Calendar.YEAR);
         String horaAc=hora+":"+minuto+":"+segundo;
+        String fechaAc=dia+"-"+mes+"-"+anio;
         //
-        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
-        builder.setTitle("guardando");
-        builder.setMessage("datos");
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+        //AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+        //builder.setTitle("guardando");
+        //builder.setMessage("datos");
+        //AlertDialog alertDialog = builder.create();
+        //alertDialog.show();
 
         //obtener id del dispositivo
         String myIMEI = Settings.Secure.getString(mainActivity.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         //obtener la velocidad en km/h ,altitud y longitud
         double speed=((location.getSpeed()*3600)/1000);
         String sp = String.format("%.2f",speed);
-        String la = String.valueOf(location.getLatitude());
-        String lo = String.valueOf(location.getLongitude());
+        double la = location.getLatitude();
+        double lo = location.getLongitude();
         if (speed < 6.5){
             mainActivity.txtVelocidad.setText("0.00");
         }else {
             mainActivity.txtVelocidad.setText(sp);
         }
-        guardarDatos(myIMEI,sp,la,lo,horaAc);
-        if (speed >= 60){
-            guardarDatosExceso(myIMEI,sp,la,lo,horaAc);
+        guardarDatos(myIMEI,sp,la,lo,horaAc,fechaAc);
+        if (speed >= 100){
+            guardarDatosExceso(myIMEI,sp,la,lo,horaAc,fechaAc);
         }
         //this.mainActivity.gpsLoc(location);
 
 
     }
-    private void guardarDatosExceso(String myIMEI,String sp,String la,String lo,String hora) {
+    private void guardarDatosExceso(String myIMEI,String sp,double la,double lo,String hora,String fecha) {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -72,12 +76,14 @@ public class GpsUbicacion implements LocationListener {
         datos.put("longitud",lo);
         datos.put("velocidad",sp);
         datos.put("hora",hora);
+        datos.put("fecha",fecha);
         datos.put("idDisposi",myIMEI);
+        datos.put("reportar",0);
         mDatabase.child(myIMEI).child("excesoVelocidad").push().setValue(datos);
 
 
     }
-    private void guardarDatos(String myIMEI,String sp,String la,String lo,String hora) {
+    private void guardarDatos(String myIMEI,String sp,double la,double lo,String hora,String fecha) {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -86,6 +92,7 @@ public class GpsUbicacion implements LocationListener {
         datos.put("longitud",lo);
         datos.put("velocidad",sp);
         datos.put("hora",hora);
+        datos.put("fecha",fecha);
         datos.put("idDisposi",myIMEI);
         mDatabase.child(myIMEI).child("DatosGPS").push().setValue(datos);
 

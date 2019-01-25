@@ -12,14 +12,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.firebase.FirebaseApp;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public CardView reportar, mapa, codigoQr, listaV;
     LottieAnimationView animationView;
     boolean estaPresionado = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,15 +54,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mapa.setOnClickListener(this);
         codigoQr.setOnClickListener(this);
         listaV.setOnClickListener(this);
+        //inicializar Firebase
+        try {
+            FirebaseApp.initializeApp(this);
+        }
+        catch (Exception e) {
+        }
 
+        // id del dispositivo
         String myIMEI = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         //definir la variable para mostrar la velocidad
         txtVelocidad = (TextView) findViewById(R.id.txtVelocidad);
         //gd.setIdUsuario(myIMEI);
         gpsUb();
+        /*
+
         CodigoQR coQR = new CodigoQR();
-        if (coQR.qrOK == true){
+        if (coQR.isQrOK() == true){
             Toast.makeText(this,"bien mrd",Toast.LENGTH_LONG).show();
         }else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -69,9 +79,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             builder.setMessage("Debes registrar el código QR");
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
-        }
+        }*/
 
-        //gd.guardar();
 
 
 
@@ -98,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         GpsUbicacion  gpsu = new GpsUbicacion();
         gpsu.setMainActivity(this);
         int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 3,(GpsUbicacion) gpsu);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 8,(GpsUbicacion) gpsu);
 
     }
 

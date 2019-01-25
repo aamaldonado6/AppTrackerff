@@ -1,6 +1,7 @@
 package alv.app.utpl.edu.ec.apptracker.menus;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -16,13 +17,24 @@ import com.google.zxing.Result;
 import java.util.HashMap;
 import java.util.Map;
 
+import alv.app.utpl.edu.ec.apptracker.MainActivity;
 import alv.app.utpl.edu.ec.apptracker.R;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class CodigoQR extends AppCompatActivity implements ZXingScannerView.ResultHandler {
     private ZXingScannerView mScanner;
     private DatabaseReference mDatabase;
-    public boolean qrOK=false;
+    private boolean qrOK=false;
+
+    public CodigoQR() {
+    }
+
+    public boolean isQrOK() {
+        return this.qrOK;
+    }
+
+
+    MainActivity mainActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,24 +71,27 @@ public class CodigoQR extends AppCompatActivity implements ZXingScannerView.Resu
 
     @Override
     public void handleResult(Result result) {
-        this.qrOK = true;
         //ordenar los datos capturados por el codigo QR
         String datos = result.getText();
         String[] parts = datos.split("-");
+
+
         //cuadro de dialogo para mostrar los resultados del codigo QR
         Log.v("hadleResult",result.getText());
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
         builder.setTitle("Usted se encuentra en:");
         if (parts[0].equals("apptrackerUTPL")){
+            this.qrOK = true;
             builder.setMessage( "Servicio de transporte: "+parts[1]+"\nNúmero de vehículo: "+parts[2]+"\nPlacas del vehículo: "+parts[3]+"\nCódigo del chofer: "+parts[4]+"\nTeléfono de compañía: "+parts[5]);
         }else {
             builder.setMessage("Error!! en código QR");
         }
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
         //Guardar los datos registrados por el codigo QR
         String myIMEI = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         guardarDatos(myIMEI,parts[1],parts[2],parts[3],parts[4],parts[5]);
+        //AlertDialog alertDialog = builder.create();
+        //alertDialog.show();
+        Intent intent=new Intent(this,MainActivity.class);startActivity(intent);
         //mScanner.resumeCameraPreview(this);
 
 

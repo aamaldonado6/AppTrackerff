@@ -48,7 +48,7 @@
         <activity android:name=".menus.CodigoQR" />
         <activity
             android:name=".menus.MapsActivity01"
-            android:label="@string/title_activity_maps01"></activity>
+            android:label="@string/title_activity_maps01" />
     </application>
 
 </manifest>

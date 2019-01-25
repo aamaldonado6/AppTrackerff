@@ -7,8 +7,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,13 +22,25 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
+import alv.app.utpl.edu.ec.apptracker.MapsLatLang;
 import alv.app.utpl.edu.ec.apptracker.R;
 
 public class MapsActivity01 extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private Marker marker;
+    private DatabaseReference databaseReference;
+    private ArrayList<Marker> allMarcadores = new ArrayList<>(); //almacenar todos los putnos
+    private ArrayList<Marker> marcadores = new ArrayList<>();//copia del array para poderlo vaciar y que no se dupliquen los marcadores
     double lat = 0.0;
     double lng = 0.0;
 
@@ -37,6 +52,7 @@ public class MapsActivity01 extends FragmentActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
 
@@ -53,11 +69,43 @@ public class MapsActivity01 extends FragmentActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         miUbicacion();
+        datosFirebase(googleMap);
+    }
+
+    private void datosFirebase(GoogleMap googleMap) {
+        mMap = googleMap;
+        String myIMEI = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        databaseReference.child(myIMEI).child("excesoVelocidad").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (Marker marker:allMarcadores){
+                    marker.remove();
+                }
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                    try {
+
+                        MapsLatLang user = snapshot.getValue(MapsLatLang.class);
+                        double latitudll =user.getLatitud();
+                        double longitudll = user.getLongitud();
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(latitudll,longitudll)).title("Exceso de velocidad"));
+
+                    }catch(DatabaseException e){
+                        Log.e("error!!",""+dataSnapshot.getKey());
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void addMarcador(double lat, double lng) {
         LatLng coordenadas = new LatLng(lat, lng);
-        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 16);
+        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 18);
         if (marker != null) marker.remove();
         marker = mMap.addMarker(new MarkerOptions().position(coordenadas).title("Tu posición").icon(BitmapDescriptorFactory.fromResource(R.drawable.autobus)));
         mMap.animateCamera(miUbicacion);
