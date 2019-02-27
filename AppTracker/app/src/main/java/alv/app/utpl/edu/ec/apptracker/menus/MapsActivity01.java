@@ -31,7 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import alv.app.utpl.edu.ec.apptracker.MapsLatLang;
+import alv.app.utpl.edu.ec.apptracker.Manejador.MapsLatLang;
 import alv.app.utpl.edu.ec.apptracker.R;
 
 public class MapsActivity01 extends FragmentActivity implements OnMapReadyCallback {

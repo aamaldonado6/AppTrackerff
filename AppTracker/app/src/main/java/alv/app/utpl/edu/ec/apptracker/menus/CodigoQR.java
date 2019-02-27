@@ -1,19 +1,23 @@
 package alv.app.utpl.edu.ec.apptracker.menus;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.zxing.Result;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,22 +28,22 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 public class CodigoQR extends AppCompatActivity implements ZXingScannerView.ResultHandler {
     private ZXingScannerView mScanner;
     private DatabaseReference mDatabase;
-    private boolean qrOK=false;
+    TextView txt_qr;
+    Button btn_qr;
 
     public CodigoQR() {
     }
 
-    public boolean isQrOK() {
-        return this.qrOK;
-    }
-
-
-    MainActivity mainActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_codigo_qr);
 
+        Context context =this;
+        SharedPreferences sharedPreferences = getSharedPreferences("ArchivoQR", context.MODE_PRIVATE);
+
+        txt_qr=findViewById(R.id.txt_qr);
+        btn_qr=findViewById(R.id.btn_qr);
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA);
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -61,44 +65,49 @@ public class CodigoQR extends AppCompatActivity implements ZXingScannerView.Resu
             // app-defined int constant. The callback method gets the
             // result of the request.
         }
+        SharedPreferences sharpref = getPreferences(MODE_PRIVATE);
+        String valor= sharpref.getString("DatosBus","Aun no se registra ningun bus");
+        txt_qr.setText(valor);
 
-        mScanner = new ZXingScannerView(this);
+    }
+    //escanear el codigo
+    public void btnEscanear(View v){
+        mScanner = new ZXingScannerView(getApplicationContext());
         setContentView(mScanner);
         mScanner.setResultHandler(this);
         mScanner.startCamera();
-
     }
-
+    //logica para escanear
     @Override
     public void handleResult(Result result) {
+        String datos="";
+        datos = result.getText();
         //ordenar los datos capturados por el codigo QR
-        String datos = result.getText();
         String[] parts = datos.split("-");
+        //Crear archivo para guardar los datos
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        //eliminar***editor.edit().remove("DatosBus").commit();
 
-
-        //cuadro de dialogo para mostrar los resultados del codigo QR
-        Log.v("hadleResult",result.getText());
-        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
-        builder.setTitle("Usted se encuentra en:");
+        //restriccion para guardar los datos
         if (parts[0].equals("apptrackerUTPL")){
-            this.qrOK = true;
-            builder.setMessage( "Servicio de transporte: "+parts[1]+"\nNúmero de vehículo: "+parts[2]+"\nPlacas del vehículo: "+parts[3]+"\nCódigo del chofer: "+parts[4]+"\nTeléfono de compañía: "+parts[5]);
+            //guardar datos en el archivo
+            editor.putString("DatosBus","Servicio de transporte: "+parts[1]+"\n\nNúmero de vehículo: "+parts[2]+"\n\nPlacas del vehículo: "+parts[3]+"\n\nCódigo del chofer: "+parts[4]+"\n\nTeléfono de compañía: "+parts[5]);
+            editor.commit();
+            //Guardar los datos en la bdd
+            String myIMEI = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+            guardarDatos(myIMEI,parts[1],parts[2],parts[3],parts[4],parts[5]);
+            Toast.makeText(this, "Servicio de transporte: "+parts[1]+"\n\nNúmero de vehículo: "+parts[2]+"\n\nPlacas del vehículo: "+parts[3]+"\n\nCódigo del chofer: "+parts[4]+"\n\nTeléfono de compañía: "+parts[5],Toast.LENGTH_LONG).show();
         }else {
-            builder.setMessage("Error!! en código QR");
+            Toast.makeText(this,"Error!! en código QR",Toast.LENGTH_SHORT).show();
         }
-        //Guardar los datos registrados por el codigo QR
-        String myIMEI = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        guardarDatos(myIMEI,parts[1],parts[2],parts[3],parts[4],parts[5]);
-        //AlertDialog alertDialog = builder.create();
-        //alertDialog.show();
-        Intent intent=new Intent(this,MainActivity.class);startActivity(intent);
+
         //mScanner.resumeCameraPreview(this);
-
-
+        mScanner.removeAllViews();
+        mScanner.stopCamera();
+        Intent intent=new Intent(this, MainActivity.class);startActivity(intent);
     }
     private void guardarDatos(String imei,String st,String nv,String pl,String cod,String te){
-
-
         Map<String,Object> datos = new HashMap<>();
         datos.put("servicio_transporte",st);
         datos.put("numero_vehiculi",nv);

@@ -1,4 +1,4 @@
-package alv.app.utpl.edu.ec.apptracker;
+package alv.app.utpl.edu.ec.apptracker.Manejador;
 
 public class MapsLatLang {
     private double latitud;

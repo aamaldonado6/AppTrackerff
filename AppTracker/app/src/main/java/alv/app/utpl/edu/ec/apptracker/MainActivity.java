@@ -9,26 +9,29 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import alv.app.utpl.edu.ec.apptracker.Manejador.GpsUbicacion;
 import alv.app.utpl.edu.ec.apptracker.menus.CodigoQR;
 import alv.app.utpl.edu.ec.apptracker.menus.Excesos;
 import alv.app.utpl.edu.ec.apptracker.menus.MapsActivity01;
@@ -36,19 +39,21 @@ import alv.app.utpl.edu.ec.apptracker.menus.ReportarCond;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public TextView txtVelocidad;
+    public TextView txtlongi;
+    public TextView txtLati;
+    private TextView txt_alert;
+    private LinearLayout LiAnima;
     public CardView reportar, mapa, codigoQr, listaV;
-    LottieAnimationView animationView;
-    boolean estaPresionado = false;
     private DatabaseReference mDatabase;
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //animationView = (LottieAnimationView) findViewById(R.id.animation_view);
-
+        LiAnima = (LinearLayout) findViewById(R.id.LiAnima);
+        txtlongi=(TextView) findViewById(R.id.txtlongitud);
+        txtLati=(TextView) findViewById(R.id.txtlatitud);;
         //pedirPermisos
         permisosUbicacion();
         //definicion de los cardview
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mapa.setOnClickListener(this);
         codigoQr.setOnClickListener(this);
         listaV.setOnClickListener(this);
+
         //inicializar Firebase
         try {
             FirebaseApp.initializeApp(this);
@@ -70,11 +76,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         catch (Exception e) {
         }
 
-        // id del dispositivo
-        String myIMEI = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
 
         //definir la variable para mostrar la velocidad
         txtVelocidad = (TextView) findViewById(R.id.txtVelocidad);
+        //contador de la alerta
+        txt_alert= (TextView)findViewById(R.id.txt_alert);
         //gd.setIdUsuario(myIMEI);
         gpsUb();
         /*
@@ -108,15 +115,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 e.printStackTrace();
             }
         }
+
     }
 
     public void gpsUb() {
 
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        GpsUbicacion  gpsu = new GpsUbicacion();
+        GpsUbicacion gpsu = new GpsUbicacion();
         gpsu.setMainActivity(this);
         int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 3,(GpsUbicacion) gpsu);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,(GpsUbicacion) gpsu);
 
     }
 
@@ -149,10 +157,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    public void panico(View v){
+private String gg = "";
+    public void panico(final View v){
+        CountDownTimer countDownTimer = new CountDownTimer(6*1000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                    txt_alert.setText("Espera: "+millisUntilFinished/1000);
+                    LiAnima.setVisibility(View.INVISIBLE);
+            }
 
-            
+            @Override
+            public void onFinish() {
+                    txt_alert.setText("ALERTA");
+                    LiAnima.setVisibility(View.VISIBLE);
+            }
+        }.start();
+        guardarDatosPanic(Double.parseDouble((String) txtLati.getText()),Double.parseDouble((String) txtLati.getText()));
+
     }
+    Calendar calendario = new GregorianCalendar();
+    int hora,minuto,segundo,mes,dia,anio;
+    public void guardarDatosPanic(double la, double lo) {
+        System.out.println(la+"-----"+lo);
+        // id del dispositivo
+        String myIMEI="";
+        try {
+
+             myIMEI = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        }catch (Exception e){}
+        hora = calendario.get(Calendar.HOUR_OF_DAY);
+        minuto = calendario.get(Calendar.MINUTE);
+        segundo = calendario.get(Calendar.SECOND);
+        dia = calendario.get(Calendar.DAY_OF_MONTH);
+        mes = calendario.get(Calendar.MONTH);
+        mes = mes+1;
+        anio = calendario.get(Calendar.YEAR);
+        String horaAc=hora+":"+minuto+":"+segundo;
+        String fechaAc=dia+"-"+mes+"-"+anio;
+
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        Map<String,Object> datos = new HashMap<>();
+        datos.put("latitud",la);
+        datos.put("longitud",lo);
+        datos.put("hora",horaAc);
+        datos.put("fecha",fechaAc);
+        datos.put("idDisposi",myIMEI);
+        mDatabase.child(myIMEI).child("botonPanico").push().setValue(datos);
+
+
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -165,4 +222,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.cardMapa : i = new Intent(this,MapsActivity01.class);startActivity(i); break;
         }
     }
+
+
 }

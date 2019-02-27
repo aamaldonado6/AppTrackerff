@@ -1,4 +1,4 @@
-package alv.app.utpl.edu.ec.apptracker;
+package alv.app.utpl.edu.ec.apptracker.Manejador;
 
 import android.location.Location;
 import android.location.LocationListener;
@@ -15,6 +15,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import alv.app.utpl.edu.ec.apptracker.MainActivity;
+
 public class GpsUbicacion implements LocationListener {
     MainActivity mainActivity;
     private DatabaseReference mDatabase;
@@ -27,6 +29,7 @@ public class GpsUbicacion implements LocationListener {
     public void setMainActivity(MainActivity mainActivity){
         this.mainActivity = mainActivity;
     }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onLocationChanged(Location location) {
@@ -54,6 +57,8 @@ public class GpsUbicacion implements LocationListener {
         String sp = String.format("%.2f",speed);
         double la = location.getLatitude();
         double lo = location.getLongitude();
+        mainActivity.txtLati.setText(String.valueOf(la));
+        mainActivity.txtlongi.setText(String.valueOf(lo));
         if (speed < 6.5){
             mainActivity.txtVelocidad.setText("0.00");
         }else {
